@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KERZENZEIT · Kerzendesigner</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #426A49;
+      --bg: #FAF7F0;
+      --bg-secondary: #F1E9DD;
+      --text: #302E2A;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .kicker {
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8a795d;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .subtext {
+      color: #756d62;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .note {
+      font-size: 0.82rem;
+      color: #6c665d;
+      line-height: 1.45;
+    }
+    .swatch-btn {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .swatch-btn:hover {
+      transform: scale(1.08);
+    }
+    .swatch-btn.active {
+      box-shadow: 0 0 0 2px #FAF7F0, 0 0 0 4px #426A49;
+      transform: scale(1.08);
+    }
+    input[type="range"] {
+      accent-color: #426A49;
+    }
+    .preset-pill {
+      transition: all 0.15s ease;
+    }
+    .preset-pill.active {
+      background-color: #426A49;
+      color: #FFFFFF;
+      border-color: #426A49;
+    }
+    .miniapp-frame {
+      max-width: 412px;
+      margin: 0 auto;
+      border: 10px solid #242424;
+      border-radius: 40px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+      background: #FAF7F0;
+      padding: 14px 14px 24px 14px;
+      position: relative;
+    }
+    .miniapp-capsule {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: #302E2A;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-[#426A49]/20">
+  <div id="appRootContainer" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 transition-all duration-300">
+    <div id="miniAppStatusBar" class="hidden flex items-center justify-between pb-3 mb-3 border-b border-[#E5DEC9] text-xs font-semibold text-[#302E2A]"><span>9:41</span><span class="tracking-wider">🕯️ KERZENZEIT 小程序</span><span class="miniapp-capsule"><span>•••</span><span class="text-[#D8CEBE]">|</span><span>◎</span></span></div>
+    <!-- Top Header & Language Switcher -->
+    <div class="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-[#E5DEC9]">
+      <div>
+        <div class="kicker" data-i18n="kicker">KERZENZEIT · DEIN KREATIV-GUIDE</div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#302e2a] mt-1" data-i18n="title">
+          Gestalte deine eigene Designkerze
+        </h1>
+        <p class="subtext mt-1" data-i18n="subtitle">
+          Wähle deine Wachsfarbe, kombiniere Wachsstränge und entdecke dein persönliches Kerzendesign.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex items-center gap-1 bg-[#F1E9DD] p-1 rounded-xl border border-[#E2D9C8]">
+          <button id="viewDesktopBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition">
+            💻 宽屏视图
+          </button>
+          <button id="viewMobileBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition">
+            📱 小程序视图
+          </button>
+        </div>
+        <div class="flex items-center gap-1 bg-[#F1E9DD] p-1 rounded-xl border border-[#E2D9C8]">
+          <button id="langDeBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition">
+            DE (Original)
+          </button>
+          <button id="langZhBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition">
+            中文对照
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expander: How it works -->
+    <div class="mt-4">
+      <button id="guideToggleBtn" type="button" class="w-full flex items-center justify-between px-4 py-3 bg-[#F1E9DD]/70 hover:bg-[#F1E9DD] border border-[#E2D9C8] rounded-xl text-left text-sm font-medium text-[#302E2A] transition">
+        <span class="flex items-center gap-2">
+          <span>🕯️</span>
+          <span data-i18n="expanderGuideTitle">So funktioniert dein Kerzendesigner</span>
+        </span>
+        <svg id="guideChevron" class="w-4 h-4 text-[#756d62] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="guideContent" class="hidden mt-1 px-4 py-3 bg-white/70 border border-[#E2D9C8] rounded-xl text-sm text-[#5c554b] leading-relaxed" data-i18n="expanderGuideBody">
+        1. Wähle die Farbe deiner Wachsplatte. 2. Wähle zwei Farben für deine Wachsstränge. 3. Entscheide dich für ein Muster und passe die Dekoration an. Die Vorschau ist eine kreative Orientierung und kein maßstabsgetreues Produktmuster.
+      </div>
+    </div>
+
+    <!-- Main 2-Column Layout -->
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+      <!-- Left Column: Controls (approx 0.92 ratio -> 5 cols) -->
+      <div class="lg:col-span-5 bg-white/80 backdrop-blur-sm border border-[#E5DEC9] rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-[#302E2A]" data-i18n="sec1Title">1 · Farben &amp; Stil</h2>
+          <button id="randomBtn" type="button" class="text-xs font-medium px-2.5 py-1.5 rounded-lg bg-[#F1E9DD] hover:bg-[#E5DEC9] text-[#426A49] transition flex items-center gap-1">
+            <span>🎲</span>
+            <span data-i18n="randomLabel">Zufallsmix</span>
+          </button>
+        </div>
+
+        <!-- Preset Selector -->
+        <div>
+          <label for="presetSelect" class="block text-xs font-semibold uppercase tracking-wider text-[#756d62] mb-2" data-i18n="presetLabel">
+            Lass dich inspirieren
+          </label>
+          <select id="presetSelect" class="w-full rounded-xl border border-[#D8CEBE] bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-medium text-[#302E2A] focus:outline-none focus:ring-2 focus:ring-[#426A49]">
+          </select>
+          <div id="presetPills" class="flex flex-wrap gap-1.5 mt-2.5"></div>
+        </div>
+
+        <!-- Base Wax Color -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="baseSelect" class="block text-xs font-semibold uppercase tracking-wider text-[#756d62]" data-i18n="baseLabel">
+              Farbe der Wachsplatte
+            </label>
+            <span id="baseHexBadge" class="text-xs font-mono text-[#8a795d]">#F4D52E</span>
+          </div>
+          <select id="baseSelect" class="w-full rounded-xl border border-[#D8CEBE] bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-medium text-[#302E2A] focus:outline-none focus:ring-2 focus:ring-[#426A49]">
+          </select>
+          <div id="baseSwatches" class="flex flex-wrap gap-2 mt-2.5"></div>
+        </div>
+
+        <!-- Strand 1 Color -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="strand1Select" class="block text-xs font-semibold uppercase tracking-wider text-[#756d62]" data-i18n="strand1Label">
+              Wachsstrang · Farbe 1
+            </label>
+            <span id="strand1HexBadge" class="text-xs font-mono text-[#8a795d]">#E52F40</span>
+          </div>
+          <select id="strand1Select" class="w-full rounded-xl border border-[#D8CEBE] bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-medium text-[#302E2A] focus:outline-none focus:ring-2 focus:ring-[#426A49]">
+          </select>
+          <div id="strand1Swatches" class="flex flex-wrap gap-2 mt-2.5"></div>
+        </div>
+
+        <!-- Strand 2 Color -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="strand2Select" class="block text-xs font-semibold uppercase tracking-wider text-[#756d62]" data-i18n="strand2Label">
+              Wachsstrang · Farbe 2
+            </label>
+            <span id="strand2HexBadge" class="text-xs font-mono text-[#8a795d]">#F18B32</span>
+          </div>
+          <select id="strand2Select" class="w-full rounded-xl border border-[#D8CEBE] bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-medium text-[#302E2A] focus:outline-none focus:ring-2 focus:ring-[#426A49]">
+          </select>
+          <div id="strand2Swatches" class="flex flex-wrap gap-2 mt-2.5"></div>
+        </div>
+
+        <!-- Decoration Style -->
+        <div>
+          <label for="styleSelect" class="block text-xs font-semibold uppercase tracking-wider text-[#756d62] mb-1.5" data-i18n="styleLabel">
+            Dekorationsstil
+          </label>
+          <select id="styleSelect" class="w-full rounded-xl border border-[#D8CEBE] bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-medium text-[#302E2A] focus:outline-none focus:ring-2 focus:ring-[#426A49]">
+          </select>
+        </div>
+
+        <!-- Motif Count Slider -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label for="motifSlider" class="text-xs font-semibold uppercase tracking-wider text-[#756d62]" data-i18n="motifLabel">
+              Dekorationsmenge
+            </label>
+            <span id="motifValueDisplay" class="text-sm font-bold text-[#426A49] bg-[#F1E9DD] px-2.5 py-0.5 rounded-full">3</span>
+          </div>
+          <input id="motifSlider" type="range" min="1" max="5" value="3" step="1" class="w-full h-2 bg-[#E5DEC9] rounded-lg cursor-pointer" />
+          <div class="flex justify-between text-[11px] text-[#8a795d] mt-1">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          </div>
+          <p id="motifHint" class="text-xs text-[#8a795d] mt-1" data-i18n="motifHelp">
+            Steuert die Anzahl der Motive in der Vorschau, soweit der gewählte Stil dies unterstützt.
+          </p>
+        </div>
+
+        <!-- Candle Name Input -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="designNameInput" class="text-xs font-semibold uppercase tracking-wider text-[#756d62]" data-i18n="nameLabel">
+              Name deiner Kerze
+            </label>
+            <span id="charCount" class="text-xs text-[#8a795d]">17/32</span>
+          </div>
+          <input id="designNameInput" type="text" maxlength="32" value="Meine Designkerze" class="w-full rounded-xl border border-[#D8CEBE] bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-medium text-[#302E2A] focus:outline-none focus:ring-2 focus:ring-[#426A49]" />
+        </div>
+      </div>
+
+      <!-- Right Column: SVG Live Preview & Export (approx 1.08 ratio -> 7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="bg-white/80 backdrop-blur-sm border border-[#E5DEC9] rounded-2xl p-5 sm:p-6 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h2 class="text-lg font-semibold text-[#302E2A]" data-i18n="sec2Title">2 · Deine Vorschau</h2>
+            <div id="activeSummaryBadges" class="flex flex-wrap items-center gap-2 text-xs"></div>
+          </div>
+
+          <!-- SVG Container -->
+          <div id="svgPreviewContainer" class="w-full flex justify-center items-center"></div>
+
+          <p class="text-xs text-center text-[#756d62] mt-3" data-i18n="previewCaption">
+            Vorschau: schlanke Kerze mit Wabenstruktur und handgeformten Wachsdetails.
+          </p>
+        </div>
+
+        <!-- Section 3: Download / Export -->
+        <div class="bg-white/80 backdrop-blur-sm border border-[#E5DEC9] rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+          <h3 class="text-base font-semibold text-[#302E2A]" data-i18n="sec3Title">3 · Design mitnehmen</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button id="downloadSvgBtn" type="button" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#426A49] hover:bg-[#36583C] text-white font-medium text-sm shadow-sm transition">
+              <span>⬇️</span>
+              <span data-i18n="downloadSvg">Design als SVG speichern</span>
+            </button>
+            <button id="downloadJsonBtn" type="button" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#F1E9DD] hover:bg-[#E5DEC9] text-[#302E2A] border border-[#D8CEBE] font-medium text-sm transition">
+              <span>⬇️</span>
+              <span data-i18n="downloadJson">Farbkombination speichern</span>
+            </button>
+          </div>
+
+          <!-- Live JSON Configuration Inspector -->
+          <div>
+            <button id="jsonPreviewToggleBtn" type="button" class="text-xs font-medium text-[#426A49] hover:underline flex items-center gap-1">
+              <span id="jsonToggleArrow">▸</span>
+              <span data-i18n="viewJsonLabel">Aktuelle JSON-Konfiguration anzeigen</span>
+            </button>
+            <pre id="jsonCodeBlock" class="hidden mt-2 p-3 rounded-xl bg-[#302E2A] text-[#FAF7F0] text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+
+          <div class="note pt-2 border-t border-[#E5DEC9]" data-i18n="disclaimerNote">
+            <strong>Hinweis:</strong> Diese Vorschau dient der kreativen Inspiration. Die dargestellten Farbtöne sind Näherungen an die Materialfarben. Bei dekorierten Kerzen muss die Brennsicherheit des fertigen Designs geprüft sein; andernfalls bitte nur als Dekoration verwenden.
+          </div>
+        </div>
+
+        <!-- Section 4: QR-Code & Mini-App Share Studio -->
+        <div class="bg-white/80 backdrop-blur-sm border border-[#E5DEC9] rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-semibold text-[#302E2A]" data-i18n="sec4Title">4 · QR-Code &amp; Mini-App Teilen (扫码小程序与公网发布)</h3>
+              <p class="text-xs text-[#756d62] mt-0.5" data-i18n="sec4Sub">
+                Erzeuge einen scannbaren QR-Code für deine veröffentlichte URL oder als direkte Design-Rezeptkarte.
+              </p>
+            </div>
+            <div class="flex items-center gap-1 bg-[#F1E9DD] p-1 rounded-xl border border-[#E2D9C8]">
+              <button id="qrModeUrlBtn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition" data-i18n="qrModeUrl">
+                🌐 公网深链模式
+              </button>
+              <button id="qrModeCardBtn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition" data-i18n="qrModeCard">
+                📋 即扫配方卡
+              </button>
+            </div>
+          </div>
+
+          <div id="qrUrlConfigBox" class="space-y-2.5">
+            <label for="qrBaseUrlInput" class="block text-xs font-semibold uppercase tracking-wider text-[#756d62]" data-i18n="qrUrlLabel">
+              Öffentliche Ziel-URL (部署后的公网域名 / 地址)
+            </label>
+            <div class="flex gap-2">
+              <input id="qrBaseUrlInput" type="url" value="https://kerzenzeit-designer.streamlit.app" placeholder="https://kerzenzeit-designer.streamlit.app" class="flex-1 rounded-xl border border-[#D8CEBE] bg-[#FAF7F0] px-3.5 py-2 text-xs font-mono text-[#302E2A] focus:outline-none focus:ring-2 focus:ring-[#426A49]" />
+              <button id="copyShareUrlBtn" type="button" class="px-3.5 py-2 rounded-xl bg-[#F1E9DD] hover:bg-[#E5DEC9] text-[#302E2A] border border-[#D8CEBE] text-xs font-semibold transition whitespace-nowrap" data-i18n="copyLinkBtn">
+                📋 链接复制
+              </button>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <label class="inline-flex items-center gap-2 text-xs text-[#5c554b] cursor-pointer">
+                <input id="qrIncludeParams" type="checkbox" checked class="rounded text-[#426A49] focus:ring-[#426A49]" />
+                <span data-i18n="qrIncludeParamsLabel">当前配色参数写入二维码链接（扫码直达该款蜡烛）</span>
+              </label>
+              <div class="flex flex-wrap gap-1">
+                <button type="button" data-host="https://kerzenzeit-designer.streamlit.app" class="host-preset-btn text-[11px] px-2 py-0.5 rounded bg-[#FAF7F0] hover:bg-[#F1E9DD] border border-[#D8CEBE] text-[#5c554b]">Streamlit Cloud</button>
+                <button type="button" data-host="https://kerzenzeit-designer.netlify.app" class="host-preset-btn text-[11px] px-2 py-0.5 rounded bg-[#FAF7F0] hover:bg-[#F1E9DD] border border-[#D8CEBE] text-[#5c554b]">Netlify</button>
+                <button type="button" data-host="https://kerzenzeit-designer.vercel.app" class="host-preset-btn text-[11px] px-2 py-0.5 rounded bg-[#FAF7F0] hover:bg-[#F1E9DD] border border-[#D8CEBE] text-[#5c554b]">Vercel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- QR Code Display & Download -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-[#FAF7F0] border border-[#E5DEC9] rounded-2xl p-4">
+            <div class="sm:col-span-5 flex flex-col items-center justify-center bg-white p-3.5 rounded-xl border border-[#E2D9C8] shadow-sm">
+              <div id="qrCodeSvgContainer" class="w-44 h-44 flex items-center justify-center"></div>
+              <span class="text-[11px] font-semibold tracking-wider text-[#426A49] mt-2">KERZENZEIT · SCAN ME</span>
+            </div>
+            <div class="sm:col-span-7 space-y-3">
+              <div>
+                <div class="text-xs font-semibold text-[#302E2A]" data-i18n="qrPayloadTitle">二维码编码内容 (QR-Inhalt):</div>
+                <div id="qrPayloadPreview" class="mt-1 p-2.5 rounded-lg bg-[#F1E9DD]/70 border border-[#E2D9C8] text-[11px] font-mono text-[#5c554b] break-all max-h-24 overflow-y-auto"></div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button id="downloadQrPngBtn" type="button" class="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#426A49] hover:bg-[#36583C] text-white font-medium text-xs shadow-sm transition">
+                  <span>🖼️</span>
+                  <span data-i18n="downloadQrPng">二维码卡片 (PNG)</span>
+                </button>
+                <button id="downloadQrSvgBtn" type="button" class="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#F1E9DD] hover:bg-[#E5DEC9] text-[#302E2A] border border-[#D8CEBE] font-medium text-xs transition">
+                  <span>📐</span>
+                  <span data-i18n="downloadQrSvg">二维码矢量图 (SVG)</span>
+                </button>
+              </div>
+              <p class="text-[11px] text-[#756d62] leading-relaxed" data-i18n="qrDeployTip">
+                💡 提示：将打包好的 <code>index.html</code> 拖入 Netlify Drop / Vercel 或将代码推送到 Streamlit Cloud，即可获得永久公网链接并印制此二维码。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expander: Impressum -->
+        <div>
+          <button id="impressumToggleBtn" type="button" class="w-full flex items-center justify-between px-4 py-3 bg-[#F1E9DD]/70 hover:bg-[#F1E9DD] border border-[#E2D9C8] rounded-xl text-left text-sm font-medium text-[#302E2A] transition">
+            <span data-i18n="impressumTitle">Impressum / Kontakt (für die spätere Veröffentlichung)</span>
+            <svg id="impressumChevron" class="w-4 h-4 text-[#756d62] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div id="impressumContent" class="hidden mt-1 px-4 py-3 bg-white/70 border border-[#E2D9C8] rounded-xl text-sm text-[#5c554b] leading-relaxed" data-i18n="impressumBody">
+            Hier vor Veröffentlichung die Angaben des verantwortlichen Unternehmens ergänzen: Peakqust, Kontakt-E-Mail und gegebenenfalls Datenschutzinformationen.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastMsg" class="fixed bottom-5 right-5 hidden bg-[#302E2A] text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg z-50"></div>
+
+  <script>
+const SimpleQR = (() => {
+  const _mods = {};
+
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+module.exports = {
+    MODE_NUMBER :       1 << 0,
+    MODE_ALPHA_NUM :    1 << 1,
+    MODE_8BIT_BYTE :    1 << 2,
+    MODE_KANJI :        1 << 3
+};
+
+    _mods["QRMode.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+module.exports = {
+	L : 1,
+	M : 0,
+	Q : 3,
+	H : 2
+};
+
+
+    _mods["QRErrorCorrectLevel.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+module.exports = {
+	PATTERN000 : 0,
+	PATTERN001 : 1,
+	PATTERN010 : 2,
+	PATTERN011 : 3,
+	PATTERN100 : 4,
+	PATTERN101 : 5,
+	PATTERN110 : 6,
+	PATTERN111 : 7
+};
+
+    _mods["QRMaskPattern.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+var QRMath = {
+
+	glog : function(n) {
+	
+		if (n < 1) {
+			throw new Error("glog(" + n + ")");
+		}
+		
+		return QRMath.LOG_TABLE[n];
+	},
+	
+	gexp : function(n) {
+	
+		while (n < 0) {
+			n += 255;
+		}
+	
+		while (n >= 256) {
+			n -= 255;
+		}
+	
+		return QRMath.EXP_TABLE[n];
+	},
+	
+	EXP_TABLE : new Array(256),
+	
+	LOG_TABLE : new Array(256)
+
+};
+	
+for (var i = 0; i < 8; i++) {
+	QRMath.EXP_TABLE[i] = 1 << i;
+}
+for (var i = 8; i < 256; i++) {
+	QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4]
+		^ QRMath.EXP_TABLE[i - 5]
+		^ QRMath.EXP_TABLE[i - 6]
+		^ QRMath.EXP_TABLE[i - 8];
+}
+for (var i = 0; i < 255; i++) {
+	QRMath.LOG_TABLE[QRMath.EXP_TABLE[i] ] = i;
+}
+
+module.exports = QRMath;
+
+    _mods["QRMath.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+var QRMath = _mods['QRMath.js'];
+
+function QRPolynomial(num, shift) {
+	if (num.length === undefined) {
+		throw new Error(num.length + "/" + shift);
+	}
+
+	var offset = 0;
+
+	while (offset < num.length && num[offset] === 0) {
+		offset++;
+	}
+
+	this.num = new Array(num.length - offset + shift);
+	for (var i = 0; i < num.length - offset; i++) {
+		this.num[i] = num[i + offset];
+	}
+}
+
+QRPolynomial.prototype = {
+
+	get : function(index) {
+		return this.num[index];
+	},
+	
+	getLength : function() {
+		return this.num.length;
+	},
+	
+	multiply : function(e) {
+	
+		var num = new Array(this.getLength() + e.getLength() - 1);
+	
+		for (var i = 0; i < this.getLength(); i++) {
+			for (var j = 0; j < e.getLength(); j++) {
+				num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i) ) + QRMath.glog(e.get(j) ) );
+			}
+		}
+	
+		return new QRPolynomial(num, 0);
+	},
+	
+	mod : function(e) {
+	
+		if (this.getLength() - e.getLength() < 0) {
+			return this;
+		}
+	
+		var ratio = QRMath.glog(this.get(0) ) - QRMath.glog(e.get(0) );
+	
+		var num = new Array(this.getLength() );
+		
+		for (var i = 0; i < this.getLength(); i++) {
+			num[i] = this.get(i);
+		}
+		
+		for (var x = 0; x < e.getLength(); x++) {
+			num[x] ^= QRMath.gexp(QRMath.glog(e.get(x) ) + ratio);
+		}
+	
+		// recursive call
+		return new QRPolynomial(num, 0).mod(e);
+	}
+};
+
+module.exports = QRPolynomial;
+
+    _mods["QRPolynomial.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+var QRErrorCorrectLevel = _mods['QRErrorCorrectLevel.js'];
+
+function QRRSBlock(totalCount, dataCount) {
+	this.totalCount = totalCount;
+	this.dataCount  = dataCount;
+}
+
+QRRSBlock.RS_BLOCK_TABLE = [
+
+	// L
+	// M
+	// Q
+	// H
+
+	// 1
+	[1, 26, 19],
+	[1, 26, 16],
+	[1, 26, 13],
+	[1, 26, 9],
+	
+	// 2
+	[1, 44, 34],
+	[1, 44, 28],
+	[1, 44, 22],
+	[1, 44, 16],
+
+	// 3
+	[1, 70, 55],
+	[1, 70, 44],
+	[2, 35, 17],
+	[2, 35, 13],
+
+	// 4		
+	[1, 100, 80],
+	[2, 50, 32],
+	[2, 50, 24],
+	[4, 25, 9],
+	
+	// 5
+	[1, 134, 108],
+	[2, 67, 43],
+	[2, 33, 15, 2, 34, 16],
+	[2, 33, 11, 2, 34, 12],
+	
+	// 6
+	[2, 86, 68],
+	[4, 43, 27],
+	[4, 43, 19],
+	[4, 43, 15],
+	
+	// 7		
+	[2, 98, 78],
+	[4, 49, 31],
+	[2, 32, 14, 4, 33, 15],
+	[4, 39, 13, 1, 40, 14],
+	
+	// 8
+	[2, 121, 97],
+	[2, 60, 38, 2, 61, 39],
+	[4, 40, 18, 2, 41, 19],
+	[4, 40, 14, 2, 41, 15],
+	
+	// 9
+	[2, 146, 116],
+	[3, 58, 36, 2, 59, 37],
+	[4, 36, 16, 4, 37, 17],
+	[4, 36, 12, 4, 37, 13],
+	
+	// 10		
+	[2, 86, 68, 2, 87, 69],
+	[4, 69, 43, 1, 70, 44],
+	[6, 43, 19, 2, 44, 20],
+	[6, 43, 15, 2, 44, 16],
+
+	// 11
+	[4, 101, 81],
+	[1, 80, 50, 4, 81, 51],
+	[4, 50, 22, 4, 51, 23],
+	[3, 36, 12, 8, 37, 13],
+
+	// 12
+	[2, 116, 92, 2, 117, 93],
+	[6, 58, 36, 2, 59, 37],
+	[4, 46, 20, 6, 47, 21],
+	[7, 42, 14, 4, 43, 15],
+
+	// 13
+	[4, 133, 107],
+	[8, 59, 37, 1, 60, 38],
+	[8, 44, 20, 4, 45, 21],
+	[12, 33, 11, 4, 34, 12],
+
+	// 14
+	[3, 145, 115, 1, 146, 116],
+	[4, 64, 40, 5, 65, 41],
+	[11, 36, 16, 5, 37, 17],
+	[11, 36, 12, 5, 37, 13],
+
+	// 15
+	[5, 109, 87, 1, 110, 88],
+	[5, 65, 41, 5, 66, 42],
+	[5, 54, 24, 7, 55, 25],
+	[11, 36, 12],
+
+	// 16
+	[5, 122, 98, 1, 123, 99],
+	[7, 73, 45, 3, 74, 46],
+	[15, 43, 19, 2, 44, 20],
+	[3, 45, 15, 13, 46, 16],
+
+	// 17
+	[1, 135, 107, 5, 136, 108],
+	[10, 74, 46, 1, 75, 47],
+	[1, 50, 22, 15, 51, 23],
+	[2, 42, 14, 17, 43, 15],
+
+	// 18
+	[5, 150, 120, 1, 151, 121],
+	[9, 69, 43, 4, 70, 44],
+	[17, 50, 22, 1, 51, 23],
+	[2, 42, 14, 19, 43, 15],
+
+	// 19
+	[3, 141, 113, 4, 142, 114],
+	[3, 70, 44, 11, 71, 45],
+	[17, 47, 21, 4, 48, 22],
+	[9, 39, 13, 16, 40, 14],
+
+	// 20
+	[3, 135, 107, 5, 136, 108],
+	[3, 67, 41, 13, 68, 42],
+	[15, 54, 24, 5, 55, 25],
+	[15, 43, 15, 10, 44, 16],
+
+	// 21
+	[4, 144, 116, 4, 145, 117],
+	[17, 68, 42],
+	[17, 50, 22, 6, 51, 23],
+	[19, 46, 16, 6, 47, 17],
+
+	// 22
+	[2, 139, 111, 7, 140, 112],
+	[17, 74, 46],
+	[7, 54, 24, 16, 55, 25],
+	[34, 37, 13],
+
+	// 23
+	[4, 151, 121, 5, 152, 122],
+	[4, 75, 47, 14, 76, 48],
+	[11, 54, 24, 14, 55, 25],
+	[16, 45, 15, 14, 46, 16],
+
+	// 24
+	[6, 147, 117, 4, 148, 118],
+	[6, 73, 45, 14, 74, 46],
+	[11, 54, 24, 16, 55, 25],
+	[30, 46, 16, 2, 47, 17],
+
+	// 25
+	[8, 132, 106, 4, 133, 107],
+	[8, 75, 47, 13, 76, 48],
+	[7, 54, 24, 22, 55, 25],
+	[22, 45, 15, 13, 46, 16],
+
+	// 26
+	[10, 142, 114, 2, 143, 115],
+	[19, 74, 46, 4, 75, 47],
+	[28, 50, 22, 6, 51, 23],
+	[33, 46, 16, 4, 47, 17],
+
+	// 27
+	[8, 152, 122, 4, 153, 123],
+	[22, 73, 45, 3, 74, 46],
+	[8, 53, 23, 26, 54, 24],
+	[12, 45, 15, 28, 46, 16],
+
+	// 28
+	[3, 147, 117, 10, 148, 118],
+	[3, 73, 45, 23, 74, 46],
+	[4, 54, 24, 31, 55, 25],
+	[11, 45, 15, 31, 46, 16],
+
+	// 29
+	[7, 146, 116, 7, 147, 117],
+	[21, 73, 45, 7, 74, 46],
+	[1, 53, 23, 37, 54, 24],
+	[19, 45, 15, 26, 46, 16],
+
+	// 30
+	[5, 145, 115, 10, 146, 116],
+	[19, 75, 47, 10, 76, 48],
+	[15, 54, 24, 25, 55, 25],
+	[23, 45, 15, 25, 46, 16],
+
+	// 31
+	[13, 145, 115, 3, 146, 116],
+	[2, 74, 46, 29, 75, 47],
+	[42, 54, 24, 1, 55, 25],
+	[23, 45, 15, 28, 46, 16],
+
+	// 32
+	[17, 145, 115],
+	[10, 74, 46, 23, 75, 47],
+	[10, 54, 24, 35, 55, 25],
+	[19, 45, 15, 35, 46, 16],
+
+	// 33
+	[17, 145, 115, 1, 146, 116],
+	[14, 74, 46, 21, 75, 47],
+	[29, 54, 24, 19, 55, 25],
+	[11, 45, 15, 46, 46, 16],
+
+	// 34
+	[13, 145, 115, 6, 146, 116],
+	[14, 74, 46, 23, 75, 47],
+	[44, 54, 24, 7, 55, 25],
+	[59, 46, 16, 1, 47, 17],
+
+	// 35
+	[12, 151, 121, 7, 152, 122],
+	[12, 75, 47, 26, 76, 48],
+	[39, 54, 24, 14, 55, 25],
+	[22, 45, 15, 41, 46, 16],
+
+	// 36
+	[6, 151, 121, 14, 152, 122],
+	[6, 75, 47, 34, 76, 48],
+	[46, 54, 24, 10, 55, 25],
+	[2, 45, 15, 64, 46, 16],
+
+	// 37
+	[17, 152, 122, 4, 153, 123],
+	[29, 74, 46, 14, 75, 47],
+	[49, 54, 24, 10, 55, 25],
+	[24, 45, 15, 46, 46, 16],
+
+	// 38
+	[4, 152, 122, 18, 153, 123],
+	[13, 74, 46, 32, 75, 47],
+	[48, 54, 24, 14, 55, 25],
+	[42, 45, 15, 32, 46, 16],
+
+	// 39
+	[20, 147, 117, 4, 148, 118],
+	[40, 75, 47, 7, 76, 48],
+	[43, 54, 24, 22, 55, 25],
+	[10, 45, 15, 67, 46, 16],
+
+	// 40
+	[19, 148, 118, 6, 149, 119],
+	[18, 75, 47, 31, 76, 48],
+	[34, 54, 24, 34, 55, 25],
+	[20, 45, 15, 61, 46, 16]
+];
+
+QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
+	
+	var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+	
+	if (rsBlock === undefined) {
+		throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
+	}
+
+	var length = rsBlock.length / 3;
+	
+	var list = [];
+	
+	for (var i = 0; i < length; i++) {
+
+		var count = rsBlock[i * 3 + 0];
+		var totalCount = rsBlock[i * 3 + 1];
+		var dataCount  = rsBlock[i * 3 + 2];
+
+		for (var j = 0; j < count; j++) {
+			list.push(new QRRSBlock(totalCount, dataCount) );	
+		}
+	}
+	
+	return list;
+};
+
+QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
+
+	switch(errorCorrectLevel) {
+	case QRErrorCorrectLevel.L :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+	case QRErrorCorrectLevel.M :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+	case QRErrorCorrectLevel.Q :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+	case QRErrorCorrectLevel.H :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+	default :
+		return undefined;
+	}
+};
+
+module.exports = QRRSBlock;
+
+    _mods["QRRSBlock.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+function QRBitBuffer() {
+	this.buffer = [];
+	this.length = 0;
+}
+
+QRBitBuffer.prototype = {
+
+	get : function(index) {
+		var bufIndex = Math.floor(index / 8);
+		return ( (this.buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+	},
+	
+	put : function(num, length) {
+		for (var i = 0; i < length; i++) {
+			this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+		}
+	},
+	
+	getLengthInBits : function() {
+		return this.length;
+	},
+	
+	putBit : function(bit) {
+	
+		var bufIndex = Math.floor(this.length / 8);
+		if (this.buffer.length <= bufIndex) {
+			this.buffer.push(0);
+		}
+	
+		if (bit) {
+			this.buffer[bufIndex] |= (0x80 >>> (this.length % 8) );
+		}
+	
+		this.length++;
+	}
+};
+
+module.exports = QRBitBuffer;
+
+    _mods["QRBitBuffer.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+var QRMode = _mods['QRMode.js'];
+
+function QR8bitByte(data) {
+	this.mode = QRMode.MODE_8BIT_BYTE;
+	this.data = data;
+}
+
+QR8bitByte.prototype = {
+
+	getLength : function() {
+		return this.data.length;
+	},
+	
+	write : function(buffer) {
+		for (var i = 0; i < this.data.length; i++) {
+			// not JIS ...
+			buffer.put(this.data.charCodeAt(i), 8);
+		}
+	}
+};
+
+module.exports = QR8bitByte;
+
+    _mods["QR8bitByte.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+var QRMode = _mods['QRMode.js'];
+var QRPolynomial = _mods['QRPolynomial.js'];
+var QRMath = _mods['QRMath.js'];
+var QRMaskPattern = _mods['QRMaskPattern.js'];
+
+var QRUtil = {
+
+    PATTERN_POSITION_TABLE : [
+        [],
+        [6, 18],
+        [6, 22],
+        [6, 26],
+        [6, 30],
+        [6, 34],
+        [6, 22, 38],
+        [6, 24, 42],
+        [6, 26, 46],
+        [6, 28, 50],
+        [6, 30, 54],        
+        [6, 32, 58],
+        [6, 34, 62],
+        [6, 26, 46, 66],
+        [6, 26, 48, 70],
+        [6, 26, 50, 74],
+        [6, 30, 54, 78],
+        [6, 30, 56, 82],
+        [6, 30, 58, 86],
+        [6, 34, 62, 90],
+        [6, 28, 50, 72, 94],
+        [6, 26, 50, 74, 98],
+        [6, 30, 54, 78, 102],
+        [6, 28, 54, 80, 106],
+        [6, 32, 58, 84, 110],
+        [6, 30, 58, 86, 114],
+        [6, 34, 62, 90, 118],
+        [6, 26, 50, 74, 98, 122],
+        [6, 30, 54, 78, 102, 126],
+        [6, 26, 52, 78, 104, 130],
+        [6, 30, 56, 82, 108, 134],
+        [6, 34, 60, 86, 112, 138],
+        [6, 30, 58, 86, 114, 142],
+        [6, 34, 62, 90, 118, 146],
+        [6, 30, 54, 78, 102, 126, 150],
+        [6, 24, 50, 76, 102, 128, 154],
+        [6, 28, 54, 80, 106, 132, 158],
+        [6, 32, 58, 84, 110, 136, 162],
+        [6, 26, 54, 82, 110, 138, 166],
+        [6, 30, 58, 86, 114, 142, 170]
+    ],
+
+    G15 : (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+    G18 : (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+    G15_MASK : (1 << 14) | (1 << 12) | (1 << 10)    | (1 << 4) | (1 << 1),
+
+    getBCHTypeInfo : function(data) {
+        var d = data << 10;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
+            d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) ) );    
+        }
+        return ( (data << 10) | d) ^ QRUtil.G15_MASK;
+    },
+
+    getBCHTypeNumber : function(data) {
+        var d = data << 12;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
+            d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) ) );    
+        }
+        return (data << 12) | d;
+    },
+
+    getBCHDigit : function(data) {
+
+        var digit = 0;
+
+        while (data !== 0) {
+            digit++;
+            data >>>= 1;
+        }
+
+        return digit;
+    },
+
+    getPatternPosition : function(typeNumber) {
+        return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1];
+    },
+
+    getMask : function(maskPattern, i, j) {
+        
+        switch (maskPattern) {
+            
+        case QRMaskPattern.PATTERN000 : return (i + j) % 2 === 0;
+        case QRMaskPattern.PATTERN001 : return i % 2 === 0;
+        case QRMaskPattern.PATTERN010 : return j % 3 === 0;
+        case QRMaskPattern.PATTERN011 : return (i + j) % 3 === 0;
+        case QRMaskPattern.PATTERN100 : return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 === 0;
+        case QRMaskPattern.PATTERN101 : return (i * j) % 2 + (i * j) % 3 === 0;
+        case QRMaskPattern.PATTERN110 : return ( (i * j) % 2 + (i * j) % 3) % 2 === 0;
+        case QRMaskPattern.PATTERN111 : return ( (i * j) % 3 + (i + j) % 2) % 2 === 0;
+
+        default :
+            throw new Error("bad maskPattern:" + maskPattern);
+        }
+    },
+
+    getErrorCorrectPolynomial : function(errorCorrectLength) {
+
+        var a = new QRPolynomial([1], 0);
+
+        for (var i = 0; i < errorCorrectLength; i++) {
+            a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0) );
+        }
+
+        return a;
+    },
+
+    getLengthInBits : function(mode, type) {
+
+        if (1 <= type && type < 10) {
+
+            // 1 - 9
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 10;
+            case QRMode.MODE_ALPHA_NUM  : return 9;
+            case QRMode.MODE_8BIT_BYTE  : return 8;
+            case QRMode.MODE_KANJI      : return 8;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 27) {
+
+            // 10 - 26
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 12;
+            case QRMode.MODE_ALPHA_NUM  : return 11;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 10;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 41) {
+
+            // 27 - 40
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 14;
+            case QRMode.MODE_ALPHA_NUM  : return 13;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 12;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else {
+            throw new Error("type:" + type);
+        }
+    },
+
+    getLostPoint : function(qrCode) {
+        
+        var moduleCount = qrCode.getModuleCount();
+        var lostPoint = 0;
+        var row = 0; 
+        var col = 0;
+
+        
+        // LEVEL1
+        
+        for (row = 0; row < moduleCount; row++) {
+
+            for (col = 0; col < moduleCount; col++) {
+
+                var sameCount = 0;
+                var dark = qrCode.isDark(row, col);
+
+                for (var r = -1; r <= 1; r++) {
+
+                    if (row + r < 0 || moduleCount <= row + r) {
+                        continue;
+                    }
+
+                    for (var c = -1; c <= 1; c++) {
+
+                        if (col + c < 0 || moduleCount <= col + c) {
+                            continue;
+                        }
+
+                        if (r === 0 && c === 0) {
+                            continue;
+                        }
+
+                        if (dark === qrCode.isDark(row + r, col + c) ) {
+                            sameCount++;
+                        }
+                    }
+                }
+
+                if (sameCount > 5) {
+                    lostPoint += (3 + sameCount - 5);
+                }
+            }
+        }
+
+        // LEVEL2
+
+        for (row = 0; row < moduleCount - 1; row++) {
+            for (col = 0; col < moduleCount - 1; col++) {
+                var count = 0;
+                if (qrCode.isDark(row,     col    ) ) count++;
+                if (qrCode.isDark(row + 1, col    ) ) count++;
+                if (qrCode.isDark(row,     col + 1) ) count++;
+                if (qrCode.isDark(row + 1, col + 1) ) count++;
+                if (count === 0 || count === 4) {
+                    lostPoint += 3;
+                }
+            }
+        }
+
+        // LEVEL3
+
+        for (row = 0; row < moduleCount; row++) {
+            for (col = 0; col < moduleCount - 6; col++) {
+                if (qrCode.isDark(row, col) && 
+                        !qrCode.isDark(row, col + 1) && 
+                         qrCode.isDark(row, col + 2) && 
+                         qrCode.isDark(row, col + 3) && 
+                         qrCode.isDark(row, col + 4) && 
+                        !qrCode.isDark(row, col + 5) && 
+                         qrCode.isDark(row, col + 6) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount - 6; row++) {
+                if (qrCode.isDark(row, col) &&
+                        !qrCode.isDark(row + 1, col) &&
+                         qrCode.isDark(row + 2, col) &&
+                         qrCode.isDark(row + 3, col) &&
+                         qrCode.isDark(row + 4, col) &&
+                        !qrCode.isDark(row + 5, col) &&
+                         qrCode.isDark(row + 6, col) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        // LEVEL4
+        
+        var darkCount = 0;
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount; row++) {
+                if (qrCode.isDark(row, col) ) {
+                    darkCount++;
+                }
+            }
+        }
+        
+        var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+        lostPoint += ratio * 10;
+
+        return lostPoint;       
+    }
+
+};
+
+module.exports = QRUtil;
+
+    _mods["QRUtil.js"] = module.exports;
+  })();
+  (() => {
+    const module = { exports: {} };
+    const exports = module.exports;
+//---------------------------------------------------------------------
+// QRCode for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//   http://www.opensource.org/licenses/mit-license.php
+//
+// The word "QR Code" is registered trademark of 
+// DENSO WAVE INCORPORATED
+//   http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+// Modified to work in node for this project (and some refactoring)
+//---------------------------------------------------------------------
+
+var QR8bitByte = _mods['QR8bitByte.js'];
+var QRUtil = _mods['QRUtil.js'];
+var QRPolynomial = _mods['QRPolynomial.js'];
+var QRRSBlock = _mods['QRRSBlock.js'];
+var QRBitBuffer = _mods['QRBitBuffer.js'];
+
+function QRCode(typeNumber, errorCorrectLevel) {
+	this.typeNumber = typeNumber;
+	this.errorCorrectLevel = errorCorrectLevel;
+	this.modules = null;
+	this.moduleCount = 0;
+	this.dataCache = null;
+	this.dataList = [];
+}
+
+QRCode.prototype = {
+	
+	addData : function(data) {
+		var newData = new QR8bitByte(data);
+		this.dataList.push(newData);
+		this.dataCache = null;
+	},
+	
+	isDark : function(row, col) {
+		if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) {
+			throw new Error(row + "," + col);
+		}
+		return this.modules[row][col];
+	},
+
+	getModuleCount : function() {
+		return this.moduleCount;
+	},
+	
+	make : function() {
+		// Calculate automatically typeNumber if provided is < 1
+		if (this.typeNumber < 1 ){
+			var typeNumber = 1;
+			for (typeNumber = 1; typeNumber < 40; typeNumber++) {
+				var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
+
+				var buffer = new QRBitBuffer();
+				var totalDataCount = 0;
+				for (var i = 0; i < rsBlocks.length; i++) {
+					totalDataCount += rsBlocks[i].dataCount;
+				}
+
+				for (var x = 0; x < this.dataList.length; x++) {
+					var data = this.dataList[x];
+					buffer.put(data.mode, 4);
+					buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+					data.write(buffer);
+				}
+				if (buffer.getLengthInBits() <= totalDataCount * 8)
+					break;
+			}
+			this.typeNumber = typeNumber;
+		}
+		this.makeImpl(false, this.getBestMaskPattern() );
+	},
+	
+	makeImpl : function(test, maskPattern) {
+		
+		this.moduleCount = this.typeNumber * 4 + 17;
+		this.modules = new Array(this.moduleCount);
+		
+		for (var row = 0; row < this.moduleCount; row++) {
+			
+			this.modules[row] = new Array(this.moduleCount);
+			
+			for (var col = 0; col < this.moduleCount; col++) {
+				this.modules[row][col] = null;//(col + row) % 3;
+			}
+		}
+	
+		this.setupPositionProbePattern(0, 0);
+		this.setupPositionProbePattern(this.moduleCount - 7, 0);
+		this.setupPositionProbePattern(0, this.moduleCount - 7);
+		this.setupPositionAdjustPattern();
+		this.setupTimingPattern();
+		this.setupTypeInfo(test, maskPattern);
+		
+		if (this.typeNumber >= 7) {
+			this.setupTypeNumber(test);
+		}
+	
+		if (this.dataCache === null) {
+			this.dataCache = QRCode.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+		}
+	
+		this.mapData(this.dataCache, maskPattern);
+	},
+
+	setupPositionProbePattern : function(row, col)  {
+		
+		for (var r = -1; r <= 7; r++) {
+			
+			if (row + r <= -1 || this.moduleCount <= row + r) continue;
+			
+			for (var c = -1; c <= 7; c++) {
+				
+				if (col + c <= -1 || this.moduleCount <= col + c) continue;
+				
+				if ( (0 <= r && r <= 6 && (c === 0 || c === 6) ) || 
+                     (0 <= c && c <= 6 && (r === 0 || r === 6) ) || 
+                     (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+					this.modules[row + r][col + c] = true;
+				} else {
+					this.modules[row + r][col + c] = false;
+				}
+			}		
+		}		
+	},
+	
+	getBestMaskPattern : function() {
+	
+		var minLostPoint = 0;
+		var pattern = 0;
+	
+		for (var i = 0; i < 8; i++) {
+			
+			this.makeImpl(true, i);
+	
+			var lostPoint = QRUtil.getLostPoint(this);
+	
+			if (i === 0 || minLostPoint >  lostPoint) {
+				minLostPoint = lostPoint;
+				pattern = i;
+			}
+		}
+	
+		return pattern;
+	},
+	
+	createMovieClip : function(target_mc, instance_name, depth) {
+	
+		var qr_mc = target_mc.createEmptyMovieClip(instance_name, depth);
+		var cs = 1;
+	
+		this.make();
+
+		for (var row = 0; row < this.modules.length; row++) {
+			
+			var y = row * cs;
+			
+			for (var col = 0; col < this.modules[row].length; col++) {
+	
+				var x = col * cs;
+				var dark = this.modules[row][col];
+			
+				if (dark) {
+					qr_mc.beginFill(0, 100);
+					qr_mc.moveTo(x, y);
+					qr_mc.lineTo(x + cs, y);
+					qr_mc.lineTo(x + cs, y + cs);
+					qr_mc.lineTo(x, y + cs);
+					qr_mc.endFill();
+				}
+			}
+		}
+		
+		return qr_mc;
+	},
+
+	setupTimingPattern : function() {
+		
+		for (var r = 8; r < this.moduleCount - 8; r++) {
+			if (this.modules[r][6] !== null) {
+				continue;
+			}
+			this.modules[r][6] = (r % 2 === 0);
+		}
+	
+		for (var c = 8; c < this.moduleCount - 8; c++) {
+			if (this.modules[6][c] !== null) {
+				continue;
+			}
+			this.modules[6][c] = (c % 2 === 0);
+		}
+	},
+	
+	setupPositionAdjustPattern : function() {
+	
+		var pos = QRUtil.getPatternPosition(this.typeNumber);
+		
+		for (var i = 0; i < pos.length; i++) {
+		
+			for (var j = 0; j < pos.length; j++) {
+			
+				var row = pos[i];
+				var col = pos[j];
+				
+				if (this.modules[row][col] !== null) {
+					continue;
+				}
+				
+				for (var r = -2; r <= 2; r++) {
+				
+					for (var c = -2; c <= 2; c++) {
+					
+						if (Math.abs(r) === 2 || 
+                            Math.abs(c) === 2 ||
+                            (r === 0 && c === 0) ) {
+							this.modules[row + r][col + c] = true;
+						} else {
+							this.modules[row + r][col + c] = false;
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	setupTypeNumber : function(test) {
+	
+		var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+        var mod;
+	
+		for (var i = 0; i < 18; i++) {
+			mod = (!test && ( (bits >> i) & 1) === 1);
+			this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+		}
+	
+		for (var x = 0; x < 18; x++) {
+			mod = (!test && ( (bits >> x) & 1) === 1);
+			this.modules[x % 3 + this.moduleCount - 8 - 3][Math.floor(x / 3)] = mod;
+		}
+	},
+	
+	setupTypeInfo : function(test, maskPattern) {
+	
+		var data = (this.errorCorrectLevel << 3) | maskPattern;
+		var bits = QRUtil.getBCHTypeInfo(data);
+        var mod;
+	
+		// vertical		
+		for (var v = 0; v < 15; v++) {
+	
+			mod = (!test && ( (bits >> v) & 1) === 1);
+	
+			if (v < 6) {
+				this.modules[v][8] = mod;
+			} else if (v < 8) {
+				this.modules[v + 1][8] = mod;
+			} else {
+				this.modules[this.moduleCount - 15 + v][8] = mod;
+			}
+		}
+	
+		// horizontal
+		for (var h = 0; h < 15; h++) {
+	
+			mod = (!test && ( (bits >> h) & 1) === 1);
+			
+			if (h < 8) {
+				this.modules[8][this.moduleCount - h - 1] = mod;
+			} else if (h < 9) {
+				this.modules[8][15 - h - 1 + 1] = mod;
+			} else {
+				this.modules[8][15 - h - 1] = mod;
+			}
+		}
+	
+		// fixed module
+		this.modules[this.moduleCount - 8][8] = (!test);
+	
+	},
+	
+	mapData : function(data, maskPattern) {
+		
+		var inc = -1;
+		var row = this.moduleCount - 1;
+		var bitIndex = 7;
+		var byteIndex = 0;
+		
+		for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+	
+			if (col === 6) col--;
+	
+			while (true) {
+	
+				for (var c = 0; c < 2; c++) {
+					
+					if (this.modules[row][col - c] === null) {
+						
+						var dark = false;
+	
+						if (byteIndex < data.length) {
+							dark = ( ( (data[byteIndex] >>> bitIndex) & 1) === 1);
+						}
+	
+						var mask = QRUtil.getMask(maskPattern, row, col - c);
+	
+						if (mask) {
+							dark = !dark;
+						}
+						
+						this.modules[row][col - c] = dark;
+						bitIndex--;
+	
+						if (bitIndex === -1) {
+							byteIndex++;
+							bitIndex = 7;
+						}
+					}
+				}
+								
+				row += inc;
+	
+				if (row < 0 || this.moduleCount <= row) {
+					row -= inc;
+					inc = -inc;
+					break;
+				}
+			}
+		}
+		
+	}
+
+};
+
+QRCode.PAD0 = 0xEC;
+QRCode.PAD1 = 0x11;
+
+QRCode.createData = function(typeNumber, errorCorrectLevel, dataList) {
+	
+	var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+	
+	var buffer = new QRBitBuffer();
+	
+	for (var i = 0; i < dataList.length; i++) {
+		var data = dataList[i];
+		buffer.put(data.mode, 4);
+		buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+		data.write(buffer);
+	}
+
+	// calc num max data.
+	var totalDataCount = 0;
+	for (var x = 0; x < rsBlocks.length; x++) {
+		totalDataCount += rsBlocks[x].dataCount;
+	}
+
+	if (buffer.getLengthInBits() > totalDataCount * 8) {
+		throw new Error("code length overflow. (" + 
+            buffer.getLengthInBits() + 
+            ">" +  
+            totalDataCount * 8 + 
+            ")");
+	}
+
+	// end code
+	if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+		buffer.put(0, 4);
+	}
+
+	// padding
+	while (buffer.getLengthInBits() % 8 !== 0) {
+		buffer.putBit(false);
+	}
+
+	// padding
+	while (true) {
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD0, 8);
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD1, 8);
+	}
+
+	return QRCode.createBytes(buffer, rsBlocks);
+};
+
+QRCode.createBytes = function(buffer, rsBlocks) {
+
+	var offset = 0;
+	
+	var maxDcCount = 0;
+	var maxEcCount = 0;
+	
+	var dcdata = new Array(rsBlocks.length);
+	var ecdata = new Array(rsBlocks.length);
+	
+	for (var r = 0; r < rsBlocks.length; r++) {
+
+		var dcCount = rsBlocks[r].dataCount;
+		var ecCount = rsBlocks[r].totalCount - dcCount;
+
+		maxDcCount = Math.max(maxDcCount, dcCount);
+		maxEcCount = Math.max(maxEcCount, ecCount);
+		
+		dcdata[r] = new Array(dcCount);
+		
+		for (var i = 0; i < dcdata[r].length; i++) {
+			dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+		}
+		offset += dcCount;
+		
+		var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+		var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+		var modPoly = rawPoly.mod(rsPoly);
+		ecdata[r] = new Array(rsPoly.getLength() - 1);
+		for (var x = 0; x < ecdata[r].length; x++) {
+            var modIndex = x + modPoly.getLength() - ecdata[r].length;
+			ecdata[r][x] = (modIndex >= 0)? modPoly.get(modIndex) : 0;
+		}
+
+	}
+	
+	var totalCodeCount = 0;
+	for (var y = 0; y < rsBlocks.length; y++) {
+		totalCodeCount += rsBlocks[y].totalCount;
+	}
+
+	var data = new Array(totalCodeCount);
+	var index = 0;
+
+	for (var z = 0; z < maxDcCount; z++) {
+		for (var s = 0; s < rsBlocks.length; s++) {
+			if (z < dcdata[s].length) {
+				data[index++] = dcdata[s][z];
+			}
+		}
+	}
+
+	for (var xx = 0; xx < maxEcCount; xx++) {
+		for (var t = 0; t < rsBlocks.length; t++) {
+			if (xx < ecdata[t].length) {
+				data[index++] = ecdata[t][xx];
+			}
+		}
+	}
+
+	return data;
+
+};
+
+module.exports = QRCode;
+
+    _mods["index.js"] = module.exports;
+  })();
+
+  const QRCode = _mods['index.js'];
+  const QRErrorCorrectLevel = _mods['QRErrorCorrectLevel.js'];
+  function encodeUTF8(str) {
+    return unescape(encodeURIComponent(str));
+  }
+  function createMatrix(text, levelStr = 'M') {
+    const levelMap = {
+      L: QRErrorCorrectLevel.L,
+      M: QRErrorCorrectLevel.M,
+      Q: QRErrorCorrectLevel.Q,
+      H: QRErrorCorrectLevel.H
+    };
+    const qr = new QRCode(-1, levelMap[levelStr] || QRErrorCorrectLevel.M);
+    qr.addData(encodeUTF8(text));
+    qr.make();
+    const count = qr.getModuleCount();
+    const matrix = [];
+    for (let r = 0; r < count; r++) {
+      const row = [];
+      for (let c = 0; c < count; c++) {
+        row.push(qr.isDark(r, c));
+      }
+      matrix.push(row);
+    }
+    return matrix;
+  }
+  return { createMatrix };
+})();
+
+
+    const WAX_COLORS = {
+      "Reinweiß": "#F4F0E7",
+      "Zitronengelb": "#F4D52E",
+      "Kräftiges Rot": "#E52F40",
+      "Rosa": "#E88FB7",
+      "Violett": "#7839A7",
+      "Orange": "#F18B32",
+      "Grasgrün": "#55A85B",
+      "Kieferngrün": "#426A49",
+      "Hellblau": "#77C8E5",
+      "Traumblau": "#244AA6",
+      "Mokkabraun": "#95634B",
+      "Schwarz": "#242424"
+    };
+
+    // Includes Violett so the "Sternennacht" preset works seamlessly without error
+    const STRAND_COLORS = {
+      "Zitronengelb": WAX_COLORS["Zitronengelb"],
+      "Kräftiges Rot": WAX_COLORS["Kräftiges Rot"],
+      "Rosa": WAX_COLORS["Rosa"],
+      "Violett": WAX_COLORS["Violett"],
+      "Orange": WAX_COLORS["Orange"],
+      "Grasgrün": WAX_COLORS["Grasgrün"],
+      "Kieferngrün": WAX_COLORS["Kieferngrün"],
+      "Traumblau": WAX_COLORS["Traumblau"],
+      "Mokkabraun": WAX_COLORS["Mokkabraun"]
+    };
+
+    const PRESETS = {
+      "Color Block": { base: "Zitronengelb", accent: "Kräftiges Rot", accent2: "Orange", style: "Diagonaler Farbstreifen" },
+      "Blütentraum": { base: "Zitronengelb", accent: "Rosa", accent2: "Grasgrün", style: "Blüten" },
+      "Sternennacht": { base: "Traumblau", accent: "Zitronengelb", accent2: "Violett", style: "Sterne & Punkte" },
+      "Natur & Formen": { base: "Grasgrün", accent: "Kieferngrün", accent2: "Mokkabraun", style: "Botanische Linien" },
+      "Farbige Wellen": { base: "Rosa", accent: "Orange", accent2: "Kräftiges Rot", style: "Wellenlinien" },
+      "Minimal": { base: "Reinweiß", accent: "Schwarz", accent2: "Grasgrün", style: "Minimal" }
+    };
+
+    const STYLES = [
+      "Diagonaler Farbstreifen",
+      "Blüten",
+      "Sterne & Punkte",
+      "Botanische Linien",
+      "Wellenlinien",
+      "Geometrische Linien",
+      "Minimal"
+    ];
+
+    const ZH_LABELS = {
+      colors: {
+        "Reinweiß": "纯白 (Reinweiß)",
+        "Zitronengelb": "柠檬黄 (Zitronengelb)",
+        "Kräftiges Rot": "浓郁红 (Kräftiges Rot)",
+        "Rosa": "柔粉 (Rosa)",
+        "Violett": "紫罗兰 (Violett)",
+        "Orange": "暖橙 (Orange)",
+        "Grasgrün": "草绿 (Grasgrün)",
+        "Kieferngrün": "松石绿 (Kieferngrün)",
+        "Hellblau": "浅蓝 (Hellblau)",
+        "Traumblau": "梦幻蓝 (Traumblau)",
+        "Mokkabraun": "摩卡棕 (Mokkabraun)",
+        "Schwarz": "经典黑 (Schwarz)"
+      },
+      presets: {
+        "Color Block": "撞色色块 (Color Block)",
+        "Blütentraum": "繁花之梦 (Blütentraum)",
+        "Sternennacht": "璀璨星夜 (Sternennacht)",
+        "Natur & Formen": "自然叶脉 (Natur & Formen)",
+        "Farbige Wellen": "彩色波浪 (Farbige Wellen)",
+        "Minimal": "极简主义 (Minimal)"
+      },
+      styles: {
+        "Diagonaler Farbstreifen": "斜向撞色条纹 (Diagonaler Farbstreifen)",
+        "Blüten": "五瓣花朵藤蔓 (Blüten)",
+        "Sterne & Punkte": "星辰与波点 (Sterne & Punkte)",
+        "Botanische Linien": "植物枝叶线条 (Botanische Linien)",
+        "Wellenlinien": "双色波浪线 (Wellenlinien)",
+        "Geometrische Linien": "几何斜线 (Geometrische Linien)",
+        "Minimal": "极简单朵花 (Minimal)"
+      },
+      ui: {
+        kicker: "KERZENZEIT · 创意手作指南 (DEIN KREATIV-GUIDE)",
+        title: "定制你的专属蜂蜡艺术蜡烛",
+        subtitle: "选择蜂蜡底片颜色，自由搭配两色装饰蜡条与图案风格，实时预览你的专属蜡烛设计。",
+        expanderGuideTitle: "使用说明 · So funktioniert dein Kerzendesigner",
+        expanderGuideBody: "1. 选择蜂蜡底片颜色（12种）。 2. 选择两款装饰蜡条颜色。 3. 选择装饰图案风格并调整装饰数量。本预览旨在提供创意灵感，非严格等比例工程图纸。",
+        sec1Title: "1 · 颜色与风格 (Farben & Stil)",
+        randomLabel: "随机灵感",
+        presetLabel: "预设灵感方案 (Lass dich inspirieren)",
+        baseLabel: "蜂蜡底片颜色 (Farbe der Wachsplatte)",
+        strand1Label: "装饰蜡条 · 颜色 1 (Wachsstrang · Farbe 1)",
+        strand2Label: "装饰蜡条 · 颜色 2 (Wachsstrang · Farbe 2)",
+        styleLabel: "装饰图案风格 (Dekorationsstil)",
+        motifLabel: "装饰图案数量 (Dekorationsmenge)",
+        motifHelp: "控制预览中的装饰元素数量（花朵、星辰、叶片等随数量动态增减）。",
+        nameLabel: "蜡烛专属名称 (Name deiner Kerze)",
+        sec2Title: "2 · 实时效果预览 (Deine Vorschau)",
+        previewCaption: "预览：带有六边形蜂巢纹理与手工蜡条细节的修长蜂蜡蜡烛。",
+        sec3Title: "3 · 导出设计方案 (Design mitnehmen)",
+        downloadSvg: "下载 SVG 矢量预览图",
+        downloadJson: "下载 JSON 配色方案",
+        viewJsonLabel: "查看当前 JSON 配置数据",
+        disclaimerNote: "<strong>提示 (Hinweis)：</strong>本预览仅供创意灵感参考，屏幕显示色彩与实际蜂蜡批次可能略有差异。装饰后的蜡烛在点燃前需确保通过燃烧安全测试，否则建议仅作装饰摆放。",
+        impressumTitle: "版本与企业信息 · Impressum / Kontakt",
+        impressumBody: "正式发布前请在此补充负责企业信息：Peakqust、联系邮箱及相关隐私保护声明。",
+        sec4Title: "4 · 小程序二维码与公网分享 (QR-Code & Teilen)",
+        sec4Sub: "实时生成可扫描的公网深链二维码或即扫即看的蜡烛配方卡二维码。",
+        qrModeUrl: "🌐 公网深链模式",
+        qrModeCard: "📋 即扫配方卡",
+        qrUrlLabel: "公网部署地址 (Öffentliche Ziel-URL)",
+        copyLinkBtn: "📋 复制深链",
+        qrIncludeParamsLabel: "将当前蜡烛配色参数写入二维码（扫码直达该设计）",
+        qrPayloadTitle: "当前二维码编码内容：",
+        downloadQrPng: "下载二维码卡片 (PNG)",
+        downloadQrSvg: "下载矢量二维码 (SVG)",
+        qrDeployTip: "💡 将下方附带的公网部署包上传至 Streamlit Cloud、Netlify Drop 或 GitHub Pages 后，填入你的公网域名即可印制专属二维码。"
+      },
+      deUi: {
+        kicker: "KERZENZEIT · DEIN KREATIV-GUIDE",
+        title: "Gestalte deine eigene Designkerze",
+        subtitle: "Wähle deine Wachsfarbe, kombiniere Wachsstränge und entdecke dein persönliches Kerzendesign.",
+        expanderGuideTitle: "So funktioniert dein Kerzendesigner",
+        expanderGuideBody: "1. Wähle die Farbe deiner Wachsplatte. 2. Wähle zwei Farben für deine Wachsstränge. 3. Entscheide dich für ein Muster und passe die Dekoration an. Die Vorschau ist eine kreative Orientierung und kein maßstabsgetreues Produktmuster.",
+        sec1Title: "1 · Farben & Stil",
+        randomLabel: "Zufallsmix",
+        presetLabel: "Lass dich inspirieren",
+        baseLabel: "Farbe der Wachsplatte",
+        strand1Label: "Wachsstrang · Farbe 1",
+        strand2Label: "Wachsstrang · Farbe 2",
+        styleLabel: "Dekorationsstil",
+        motifLabel: "Dekorationsmenge",
+        motifHelp: "Steuert die Anzahl der Motive in der Vorschau, soweit der gewählte Stil dies unterstützt.",
+        nameLabel: "Name deiner Kerze",
+        sec2Title: "2 · Deine Vorschau",
+        previewCaption: "Vorschau: schlanke Kerze mit Wabenstruktur und handgeformten Wachsdetails.",
+        sec3Title: "3 · Design mitnehmen",
+        downloadSvg: "Design als SVG speichern",
+        downloadJson: "Farbkombination speichern",
+        viewJsonLabel: "Aktuelle JSON-Konfiguration anzeigen",
+        disclaimerNote: "<strong>Hinweis:</strong> Diese Vorschau dient der kreativen Inspiration. Die dargestellten Farbtöne sind Näherungen an die Materialfarben. Bei dekorierten Kerzen muss die Brennsicherheit des fertigen Designs geprüft sein; andernfalls bitte nur als Dekoration verwenden.",
+        impressumTitle: "Impressum / Kontakt (für die spätere Veröffentlichung)",
+        impressumBody: "Hier vor Veröffentlichung die Angaben des verantwortlichen Unternehmens ergänzen: Peakqust, Kontakt-E-Mail und gegebenenfalls Datenschutzinformationen.",
+        sec4Title: "4 · QR-Code & Mini-App Teilen",
+        sec4Sub: "Erzeuge einen scannbaren QR-Code für deine öffentliche URL oder als direkte Design-Rezeptkarte.",
+        qrModeUrl: "🌐 Web-Link QR",
+        qrModeCard: "📋 Rezeptkarte QR",
+        qrUrlLabel: "Öffentliche Ziel-URL (z. B. Streamlit Cloud / Netlify)",
+        copyLinkBtn: "📋 Link kopieren",
+        qrIncludeParamsLabel: "Aktuelle Farbkombination in URL-Parameter einbetten",
+        qrPayloadTitle: "Kodierter QR-Inhalt:",
+        downloadQrPng: "QR-Karte speichern (PNG)",
+        downloadQrSvg: "QR-Code speichern (SVG)",
+        qrDeployTip: "💡 Tipp: Nach Veröffentlichung auf Streamlit Cloud oder Netlify die finale URL oben eintragen und den QR-Code für den Kreativ-Guide herunterladen."
+      }
+    };
+
+    // App State
+    const state = {
+      lang: "de",
+      viewMode: "desktop",
+      qrMode: "url",
+      qrBaseUrl: "https://kerzenzeit-designer.streamlit.app",
+      qrIncludeParams: true,
+      preset: "Color Block",
+      base: "Zitronengelb",
+      strand1: "Kräftiges Rot",
+      strand2: "Orange",
+      style: "Diagonaler Farbstreifen",
+      motifCount: 3,
+      designName: "Meine Designkerze"
+    };
+
+    function getQrPayload() {
+      const cleanName = state.designName.trim() || "Meine Designkerze";
+      if (state.qrMode === "card") {
+        const s2Hex = STRAND_COLORS[state.strand2] || WAX_COLORS[state.strand2];
+        return [
+          "KERZENZEIT · Kerzendesigner",
+          `Name: ${cleanName}`,
+          `Wachsplatte: ${state.base} (${WAX_COLORS[state.base]})`,
+          `Strang 1: ${state.strand1} (${STRAND_COLORS[state.strand1]})`,
+          `Strang 2: ${state.strand2} (${s2Hex})`,
+          `Stil: ${state.style} (Menge: ${state.motifCount})`
+        ].join("\n");
+      }
+      let base = (state.qrBaseUrl || "https://kerzenzeit-designer.streamlit.app").trim();
+      if (!base) base = "https://kerzenzeit-designer.streamlit.app";
+      if (!state.qrIncludeParams) return base;
+      const sep = base.includes("?") ? "&" : "?";
+      const params = new URLSearchParams({
+        base: state.base,
+        s1: state.strand1,
+        s2: state.strand2,
+        style: state.style,
+        count: String(state.motifCount),
+        name: cleanName
+      });
+      return `${base}${sep}${params.toString()}`;
+    }
+
+    function buildQrSvg(payload, darkColor = "#302E2A", lightColor = "#FFFFFF", quietZone = 3) {
+      const matrix = SimpleQR.createMatrix(payload, "M");
+      const n = matrix.length;
+      const total = n + quietZone * 2;
+      const parts = [
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" width="100%" height="100%" shape-rendering="crispEdges">`,
+        `<rect width="${total}" height="${total}" fill="${lightColor}" rx="1.5"/>`
+      ];
+      let pathD = "";
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          if (matrix[r][c]) {
+            pathD += `M${c + quietZone},${r + quietZone}h1v1h-1z`;
+          }
+        }
+      }
+      parts.push(`<path d="${pathD}" fill="${darkColor}"/>`);
+      parts.push(`</svg>`);
+      return { svg: parts.join(""), matrix, total };
+    }
+
+    function esc(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#x27;");
+    }
+
+    function starPoints(cx, cy, outer = 15, inner = 6, n = 5, rotation = -90) {
+      const pts = [];
+      for (let i = 0; i < n * 2; i++) {
+        const r = i % 2 === 0 ? outer : inner;
+        const a = ((rotation + (i * 180) / n) * Math.PI) / 180;
+        pts.push(`${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`);
+      }
+      return pts.join(" ");
+    }
+
+    function flowerSvg(cx, cy, petalColor, centerColor, scale = 1.0, petals = 5) {
+      const parts = [];
+      const radius = 10 * scale;
+      const petalR = 5.7 * scale;
+      for (let i = 0; i < petals; i++) {
+        const angle = (((i * 360) / petals - 90) * Math.PI) / 180;
+        const px = cx + radius * Math.cos(angle);
+        const py = cy + radius * Math.sin(angle);
+        parts.push(
+          `<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${petalR.toFixed(1)}" ry="${(petalR * 0.72).toFixed(1)}" ` +
+          `fill="${petalColor}" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.7" ` +
+          `transform="rotate(${((i * 360) / petals).toFixed(1)} ${px.toFixed(1)} ${py.toFixed(1)})"/>`
+        );
+      }
+      parts.push(
+        `<circle cx="${cx}" cy="${cy}" r="${(4.0 * scale).toFixed(1)}" fill="${centerColor}" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.7"/>`
+      );
+      return parts.join("");
+    }
+
+    function renderCandleSvg(baseColor, accentColor, accent2Color, style, motifCount = 3, candleLabel = "Dein Design") {
+      const bCol = esc(baseColor);
+      const a1Col = esc(accentColor);
+      const a2Col = esc(accent2Color);
+      const title = esc(candleLabel);
+
+      const pieces = [`<svg xmlns="http://www.w3.org/2000/svg" width="540" height="720" viewBox="0 0 540 720" role="img" aria-label="Vorschau einer dekorierten Kerze" style="width:100%;height:auto;display:block;max-width:460px;margin:auto">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#FBF7EF"/><stop offset="1" stop-color="#EFE5D6"/></linearGradient>
+      <linearGradient id="candleShade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000000" stop-opacity="0.17"/><stop offset="0.18" stop-color="#FFFFFF" stop-opacity="0.08"/><stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.00"/><stop offset="1" stop-color="#000000" stop-opacity="0.18"/></linearGradient>
+      <pattern id="honeycomb" width="18" height="16" patternUnits="userSpaceOnUse">
+        <path d="M4.5 0 L9 2.7 L9 8 L4.5 10.7 L0 8 L0 2.7 Z M13.5 8 L18 10.7 L18 16 L13.5 18.7 L9 16 L9 10.7 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.34" stroke-width="1.2"/>
+        <path d="M4.5 1.5 L7.5 3.3 L7.5 7.2 L4.5 9 L1.5 7.2 L1.5 3.3 Z" fill="#FFFFFF" fill-opacity="0.07"/>
+      </pattern>
+      <clipPath id="candleClip"><path d="M218 128 C218 108 235 98 270 98 C305 98 322 108 322 128 L322 570 C322 594 299 607 270 607 C241 607 218 594 218 570 Z"/></clipPath>
+      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+    </defs>
+    <rect width="540" height="720" rx="28" fill="url(#bg)"/>
+    <circle cx="80" cy="90" r="56" fill="#FFFFFF" opacity="0.30"/>
+    <circle cx="458" cy="595" r="82" fill="#FFFFFF" opacity="0.25"/>
+    <g opacity="0.42" fill="none" stroke="#C7A86A" stroke-width="1.3">
+      <path d="M58 195 C85 170 100 148 105 118 C112 151 127 171 150 183"/>
+      <path d="M430 145 C454 170 466 195 466 225 C449 207 432 196 410 194"/>
+      <polygon points="445,82 450,94 463,95 453,103 456,116 445,108 434,116 437,103 427,95 440,94"/>
+      <circle cx="88" cy="540" r="5"/><circle cx="452" cy="310" r="4"/>
+    </g>
+    <ellipse cx="270" cy="604" rx="78" ry="19" fill="#51483D" opacity="0.17" filter="url(#shadow)"/>
+    <ellipse cx="270" cy="605" rx="57" ry="11" fill="#8C7964" opacity="0.16"/>
+    <path d="M270 102 C266 92 274 84 270 74" stroke="#51453A" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M218 128 C218 108 235 98 270 98 C305 98 322 108 322 128 L322 570 C322 594 299 607 270 607 C241 607 218 594 218 570 Z" fill="${bCol}"/>
+    <g clip-path="url(#candleClip)"><rect x="218" y="95" width="104" height="520" fill="url(#honeycomb)"/><rect x="218" y="95" width="104" height="520" fill="url(#candleShade)"/></g>
+    <ellipse cx="270" cy="128" rx="52" ry="24" fill="${bCol}" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1.2"/>
+    <ellipse cx="270" cy="128" rx="43" ry="17" fill="url(#honeycomb)" opacity="0.9"/>
+    <path d="M218 128 C218 108 235 98 270 98 C305 98 322 108 322 128 L322 570 C322 594 299 607 270 607 C241 607 218 594 218 570 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.30" stroke-width="1.4"/>`];
+
+      const count = parseInt(motifCount, 10) || 3;
+      if (style === "Diagonaler Farbstreifen") {
+        pieces.push(`<path d="M205 245 L335 188 L335 231 L205 288 Z" fill="${a1Col}" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="1.2"/>`);
+        pieces.push(`<path d="M205 245 L335 188 L335 231 L205 288 Z" fill="url(#honeycomb)" opacity="0.6"/>`);
+        pieces.push(`<path d="M210 245 L329 193" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="1.1"/>`);
+      } else if (style === "Blüten") {
+        const centers = [[263, 228], [290, 283], [248, 340], [284, 395], [258, 451]];
+        centers.slice(0, Math.max(1, count)).forEach(([x, y], i) => {
+          pieces.push(flowerSvg(x, y, a1Col, a2Col, i % 2 ? 0.85 : 0.95, 5));
+        });
+        pieces.push(`<path d="M266 244 Q280 270 270 288 T251 340 T286 398 T258 462" fill="none" stroke="${a2Col}" stroke-width="4" stroke-linecap="round"/>`);
+        const leaves = [[275, 267, -25], [260, 315, 30], [274, 372, -30], [269, 428, 28]];
+        leaves.slice(0, Math.max(1, count)).forEach(([x, y, rot]) => {
+          pieces.push(`<ellipse cx="${x}" cy="${y}" rx="10" ry="4.5" fill="${a2Col}" transform="rotate(${rot} ${x} ${y})"/>`);
+        });
+      } else if (style === "Sterne & Punkte") {
+        const coords = [[252, 205, 15], [289, 266, 10], [247, 328, 11], [291, 379, 14], [254, 445, 9], [284, 500, 12]];
+        coords.slice(0, Math.max(1, count + 1)).forEach(([x, y, r]) => {
+          const pts = starPoints(x, y, r, r * 0.44);
+          pieces.push(`<polygon points="${pts}" fill="${a1Col}" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="1"/>`);
+          pieces.push(`<circle cx="${x + 18}" cy="${y + 18}" r="2.8" fill="${a2Col}"/>`);
+        });
+      } else if (style === "Botanische Linien") {
+        pieces.push(`<path d="M258 540 C300 480 228 435 277 380 S231 280 278 205" fill="none" stroke="${a1Col}" stroke-width="4" stroke-linecap="round"/>`);
+        pieces.push(`<path d="M280 390 C305 370 305 345 301 330" fill="none" stroke="${a2Col}" stroke-width="3.5" stroke-linecap="round"/>`);
+        const leaves = [[268, 480, -38], [269, 438, 32], [269, 363, -36], [267, 309, 35], [269, 260, -38], [272, 225, 32]];
+        leaves.slice(0, Math.max(2, count + 2)).forEach(([x, y, rot], i) => {
+          const col = (i === 1 || i === 4) ? a2Col : a1Col;
+          pieces.push(`<path d="M${x} ${y} q-18 -18 -20 -4 q4 16 20 4 Z" fill="${col}" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="0.8" transform="rotate(${rot} ${x} ${y})"/>`);
+        });
+      } else if (style === "Wellenlinien") {
+        pieces.push(`<path d="M214 230 C245 205 294 255 326 225 M214 290 C245 265 294 315 326 285 M214 350 C245 325 294 375 326 345 M214 410 C245 385 294 435 326 405" fill="none" stroke="${a1Col}" stroke-width="4.2" stroke-linecap="round"/>`);
+        pieces.push(`<path d="M214 260 C245 235 294 285 326 255 M214 320 C245 295 294 345 326 315 M214 380 C245 355 294 405 326 375" fill="none" stroke="${a2Col}" stroke-width="3" stroke-linecap="round"/>`);
+      } else if (style === "Geometrische Linien") {
+        pieces.push(`<path d="M216 235 L322 280 M216 290 L322 335 M216 345 L322 390 M216 400 L322 445" fill="none" stroke="${a1Col}" stroke-width="4" stroke-linecap="round"/>`);
+        pieces.push(`<path d="M216 255 L322 300 M216 310 L322 355 M216 365 L322 410" fill="none" stroke="${a2Col}" stroke-width="3" stroke-linecap="round"/>`);
+      } else {
+        pieces.push(flowerSvg(270, 320, a1Col, a2Col, 0.95, 5));
+        pieces.push(`<path d="M270 338 C286 363 258 385 270 408" fill="none" stroke="${a2Col}" stroke-width="3" stroke-linecap="round"/>`);
+        pieces.push(`<ellipse cx="270" cy="390" rx="10" ry="4.5" fill="${a2Col}" transform="rotate(-35 270 390)"/>`);
+      }
+
+      pieces.push(`
+    <text x="270" y="657" text-anchor="middle" font-family="Georgia,serif" font-size="24" fill="#38342F">KERZENZEIT</text>
+    <text x="270" y="682" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" letter-spacing="2.4" fill="#81766A">${title}</text>
+    </svg>`);
+      return pieces.join("");
+    }
+
+    function getCurrentConfig() {
+      const cleanName = state.designName.trim() || "Meine Designkerze";
+      const strand2Hex = STRAND_COLORS[state.strand2] || WAX_COLORS[state.strand2];
+      return {
+        design_name: cleanName,
+        wax_sheet_color: { name_de: state.base, hex: WAX_COLORS[state.base] },
+        wax_strand_color_1: { name_de: state.strand1, hex: STRAND_COLORS[state.strand1] },
+        wax_strand_color_2: { name_de: state.strand2, hex: strand2Hex },
+        style: state.style,
+        motif_count: state.motifCount,
+        note: "Digitale Designvorschau; tatsächliche Farben können je nach Materialcharge und Bildschirm abweichen. Dekorierte Kerzen nur anzünden, wenn ihr Brennverhalten geprüft wurde."
+      };
+    }
+
+    function populateSelects() {
+      const presetSelect = document.getElementById("presetSelect");
+      const baseSelect = document.getElementById("baseSelect");
+      const strand1Select = document.getElementById("strand1Select");
+      const strand2Select = document.getElementById("strand2Select");
+      const styleSelect = document.getElementById("styleSelect");
+
+      presetSelect.innerHTML = Object.keys(PRESETS).map(k => {
+        const label = state.lang === "zh" ? ZH_LABELS.presets[k] : k;
+        return `<option value="${esc(k)}">${esc(label)}</option>`;
+      }).join("");
+
+      baseSelect.innerHTML = Object.keys(WAX_COLORS).map(k => {
+        const label = state.lang === "zh" ? ZH_LABELS.colors[k] : k;
+        return `<option value="${esc(k)}">${esc(label)}</option>`;
+      }).join("");
+
+      const strandKeys = Object.keys(STRAND_COLORS);
+      strand1Select.innerHTML = strandKeys.map(k => {
+        const label = state.lang === "zh" ? ZH_LABELS.colors[k] : k;
+        return `<option value="${esc(k)}">${esc(label)}</option>`;
+      }).join("");
+
+      strand2Select.innerHTML = strandKeys.map(k => {
+        const label = state.lang === "zh" ? ZH_LABELS.colors[k] : k;
+        return `<option value="${esc(k)}">${esc(label)}</option>`;
+      }).join("");
+
+      styleSelect.innerHTML = STYLES.map(k => {
+        const label = state.lang === "zh" ? ZH_LABELS.styles[k] : k;
+        return `<option value="${esc(k)}">${esc(label)}</option>`;
+      }).join("");
+
+      presetSelect.value = state.preset;
+      baseSelect.value = state.base;
+      strand1Select.value = state.strand1;
+      strand2Select.value = state.strand2;
+      styleSelect.value = state.style;
+    }
+
+    function renderPresetPills() {
+      const container = document.getElementById("presetPills");
+      container.innerHTML = Object.keys(PRESETS).map(k => {
+        const isActive = state.preset === k;
+        const p = PRESETS[k];
+        return `<button type="button" data-preset="${esc(k)}" class="preset-pill ${isActive ? 'active' : 'bg-[#FAF7F0] text-[#5c554b] hover:bg-[#F1E9DD]'} text-xs font-medium px-2.5 py-1 rounded-lg border border-[#D8CEBE] flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/15" style="background:${WAX_COLORS[p.base]}"></span>
+          <span>${esc(k)}</span>
+        </button>`;
+      }).join("");
+
+      container.querySelectorAll("button[data-preset]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          applyPreset(btn.getAttribute("data-preset"));
+        });
+      });
+    }
+
+    function renderSwatches() {
+      const makeSwatches = (containerId, colorMap, activeKey, onSelect) => {
+        const el = document.getElementById(containerId);
+        el.innerHTML = Object.entries(colorMap).map(([name, hex]) => {
+          const isActive = name === activeKey;
+          const title = state.lang === "zh" ? ZH_LABELS.colors[name] : name;
+          return `<button type="button" data-color="${esc(name)}" title="${esc(title)} (${hex})" class="swatch-btn ${isActive ? 'active' : ''} w-6 h-6 rounded-full border border-black/20" style="background-color:${hex}"></button>`;
+        }).join("");
+        el.querySelectorAll("button[data-color]").forEach(btn => {
+          btn.addEventListener("click", () => onSelect(btn.getAttribute("data-color")));
+        });
+      };
+
+      makeSwatches("baseSwatches", WAX_COLORS, state.base, (col) => {
+        state.base = col;
+        updateAll();
+      });
+      makeSwatches("strand1Swatches", STRAND_COLORS, state.strand1, (col) => {
+        state.strand1 = col;
+        updateAll();
+      });
+      makeSwatches("strand2Swatches", STRAND_COLORS, state.strand2, (col) => {
+        state.strand2 = col;
+        updateAll();
+      });
+    }
+
+    function applyPreset(presetName) {
+      const p = PRESETS[presetName];
+      if (!p) return;
+      state.preset = presetName;
+      state.base = p.base;
+      state.strand1 = p.accent;
+      state.strand2 = p.accent2;
+      state.style = p.style;
+      updateAll();
+    }
+
+    function updateAll() {
+      document.getElementById("presetSelect").value = state.preset;
+      document.getElementById("baseSelect").value = state.base;
+      document.getElementById("strand1Select").value = state.strand1;
+      document.getElementById("strand2Select").value = state.strand2;
+      document.getElementById("styleSelect").value = state.style;
+      document.getElementById("motifSlider").value = state.motifCount;
+      document.getElementById("motifValueDisplay").textContent = state.motifCount;
+      document.getElementById("charCount").textContent = `${state.designName.length}/32`;
+
+      document.getElementById("baseHexBadge").textContent = WAX_COLORS[state.base];
+      document.getElementById("strand1HexBadge").textContent = STRAND_COLORS[state.strand1];
+      document.getElementById("strand2HexBadge").textContent = STRAND_COLORS[state.strand2] || WAX_COLORS[state.strand2];
+
+      renderPresetPills();
+      renderSwatches();
+
+      const label = state.designName.trim() || "Meine Designkerze";
+      const svgMarkup = renderCandleSvg(
+        WAX_COLORS[state.base],
+        STRAND_COLORS[state.strand1],
+        STRAND_COLORS[state.strand2] || WAX_COLORS[state.strand2],
+        state.style,
+        state.motifCount,
+        label
+      );
+      document.getElementById("svgPreviewContainer").innerHTML = svgMarkup;
+
+      // Summary badges
+      const summaryEl = document.getElementById("activeSummaryBadges");
+      summaryEl.innerHTML = `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F0] border border-[#E2D9C8] text-[#302E2A]">
+          <span class="w-3 h-3 rounded-full border border-black/15" style="background:${WAX_COLORS[state.base]}"></span>
+          ${esc(state.base)}
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F0] border border-[#E2D9C8] text-[#302E2A]">
+          <span class="w-3 h-3 rounded-full border border-black/15" style="background:${STRAND_COLORS[state.strand1]}"></span>
+          ${esc(state.strand1)}
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F0] border border-[#E2D9C8] text-[#302E2A]">
+          <span class="w-3 h-3 rounded-full border border-black/15" style="background:${STRAND_COLORS[state.strand2] || WAX_COLORS[state.strand2]}"></span>
+          ${esc(state.strand2)}
+        </span>
+      `;
+
+      // Update JSON preview
+      const cfg = getCurrentConfig();
+      document.getElementById("jsonCodeBlock").textContent = JSON.stringify(cfg, null, 2);
+
+      // Update QR Code
+      const payload = getQrPayload();
+      document.getElementById("qrPayloadPreview").textContent = payload;
+      const qrObj = buildQrSvg(payload, "#302E2A", "#FFFFFF", 3);
+      document.getElementById("qrCodeSvgContainer").innerHTML = qrObj.svg;
+    }
+
+    function setLanguage(lang) {
+      state.lang = lang;
+      const dict = lang === "zh" ? ZH_LABELS.ui : ZH_LABELS.deUi;
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) {
+          if (key === "disclaimerNote") {
+            el.innerHTML = dict[key];
+          } else {
+            el.textContent = dict[key];
+          }
+        }
+      });
+
+      const deBtn = document.getElementById("langDeBtn");
+      const zhBtn = document.getElementById("langZhBtn");
+      if (lang === "de") {
+        deBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition";
+        zhBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition";
+      } else {
+        zhBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition";
+        deBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition";
+      }
+
+      populateSelects();
+      updateAll();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toastMsg");
+      toast.textContent = message;
+      toast.classList.remove("hidden");
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2600);
+    }
+
+    function triggerDownload(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Gespeichert: ${filename}`);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      populateSelects();
+      applyPreset("Color Block");
+
+      // Parse URL parameters if opened via scanned QR deep-link
+      try {
+        const sp = new URLSearchParams(window.location.search);
+        if (sp.get("base") && WAX_COLORS[sp.get("base")]) state.base = sp.get("base");
+        if (sp.get("s1") && STRAND_COLORS[sp.get("s1")]) state.strand1 = sp.get("s1");
+        if (sp.get("s2") && STRAND_COLORS[sp.get("s2")]) state.strand2 = sp.get("s2");
+        if (sp.get("style") && STYLES.includes(sp.get("style"))) state.style = sp.get("style");
+        if (sp.get("count")) {
+          const c = parseInt(sp.get("count"), 10);
+          if (c >= 1 && c <= 5) state.motifCount = c;
+        }
+        if (sp.get("name")) {
+          state.designName = sp.get("name").slice(0, 32);
+          document.getElementById("designNameInput").value = state.designName;
+        }
+        if (sp.get("lang") === "zh") {
+          setLanguage("zh");
+        } else {
+          updateAll();
+        }
+      } catch (err) {
+        updateAll();
+      }
+
+      document.getElementById("presetSelect").addEventListener("change", (e) => {
+        applyPreset(e.target.value);
+      });
+      document.getElementById("baseSelect").addEventListener("change", (e) => {
+        state.base = e.target.value;
+        updateAll();
+      });
+      document.getElementById("strand1Select").addEventListener("change", (e) => {
+        state.strand1 = e.target.value;
+        updateAll();
+      });
+      document.getElementById("strand2Select").addEventListener("change", (e) => {
+        state.strand2 = e.target.value;
+        updateAll();
+      });
+      document.getElementById("styleSelect").addEventListener("change", (e) => {
+        state.style = e.target.value;
+        updateAll();
+      });
+      document.getElementById("motifSlider").addEventListener("input", (e) => {
+        state.motifCount = parseInt(e.target.value, 10) || 3;
+        updateAll();
+      });
+      document.getElementById("designNameInput").addEventListener("input", (e) => {
+        state.designName = e.target.value;
+        updateAll();
+      });
+
+      document.getElementById("randomBtn").addEventListener("click", () => {
+        const bases = Object.keys(WAX_COLORS);
+        const strands = Object.keys(STRAND_COLORS);
+        state.base = bases[Math.floor(Math.random() * bases.length)];
+        state.strand1 = strands[Math.floor(Math.random() * strands.length)];
+        state.strand2 = strands[Math.floor(Math.random() * strands.length)];
+        state.style = STYLES[Math.floor(Math.random() * STYLES.length)];
+        state.motifCount = Math.floor(Math.random() * 5) + 1;
+        updateAll();
+      });
+
+      document.getElementById("langDeBtn").addEventListener("click", () => setLanguage("de"));
+      document.getElementById("langZhBtn").addEventListener("click", () => setLanguage("zh"));
+
+      document.getElementById("guideToggleBtn").addEventListener("click", () => {
+        const content = document.getElementById("guideContent");
+        const chevron = document.getElementById("guideChevron");
+        content.classList.toggle("hidden");
+        chevron.classList.toggle("rotate-180");
+      });
+
+      document.getElementById("impressumToggleBtn").addEventListener("click", () => {
+        const content = document.getElementById("impressumContent");
+        const chevron = document.getElementById("impressumChevron");
+        content.classList.toggle("hidden");
+        chevron.classList.toggle("rotate-180");
+      });
+
+      document.getElementById("jsonPreviewToggleBtn").addEventListener("click", () => {
+        const block = document.getElementById("jsonCodeBlock");
+        const arrow = document.getElementById("jsonToggleArrow");
+        block.classList.toggle("hidden");
+        arrow.textContent = block.classList.contains("hidden") ? "▸" : "▾";
+      });
+
+      document.getElementById("downloadSvgBtn").addEventListener("click", () => {
+        const label = state.designName.trim() || "Meine Designkerze";
+        const svg = renderCandleSvg(
+          WAX_COLORS[state.base],
+          STRAND_COLORS[state.strand1],
+          STRAND_COLORS[state.strand2] || WAX_COLORS[state.strand2],
+          state.style,
+          state.motifCount,
+          label
+        );
+        triggerDownload(svg, "kerzenzeit-design.svg", "image/svg+xml;charset=utf-8");
+      });
+
+      document.getElementById("downloadJsonBtn").addEventListener("click", () => {
+        const cfg = getCurrentConfig();
+        triggerDownload(JSON.stringify(cfg, null, 2), "kerzenzeit-farbkombination.json", "application/json;charset=utf-8");
+      });
+
+      // View mode toggle (Desktop vs Mobile Mini-App Frame)
+      const rootContainer = document.getElementById("appRootContainer");
+      const statusBar = document.getElementById("miniAppStatusBar");
+      const viewDesktopBtn = document.getElementById("viewDesktopBtn");
+      const viewMobileBtn = document.getElementById("viewMobileBtn");
+
+      function setViewMode(mode) {
+        state.viewMode = mode;
+        if (mode === "mobile") {
+          rootContainer.classList.add("miniapp-frame", "my-4");
+          statusBar.classList.remove("hidden");
+          viewMobileBtn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition";
+          viewDesktopBtn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition";
+        } else {
+          rootContainer.classList.remove("miniapp-frame", "my-4");
+          statusBar.classList.add("hidden");
+          viewDesktopBtn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition";
+          viewMobileBtn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition";
+        }
+      }
+
+      viewDesktopBtn.addEventListener("click", () => setViewMode("desktop"));
+      viewMobileBtn.addEventListener("click", () => setViewMode("mobile"));
+
+      // QR Mode & URL controls
+      const qrModeUrlBtn = document.getElementById("qrModeUrlBtn");
+      const qrModeCardBtn = document.getElementById("qrModeCardBtn");
+      const qrUrlConfigBox = document.getElementById("qrUrlConfigBox");
+
+      qrModeUrlBtn.addEventListener("click", () => {
+        state.qrMode = "url";
+        qrUrlConfigBox.classList.remove("hidden");
+        qrModeUrlBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition";
+        qrModeCardBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition";
+        updateAll();
+      });
+
+      qrModeCardBtn.addEventListener("click", () => {
+        state.qrMode = "card";
+        qrUrlConfigBox.classList.add("hidden");
+        qrModeCardBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#426A49] text-white transition";
+        qrModeUrlBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-[#302E2A] hover:bg-[#E5DEC9]/60 transition";
+        updateAll();
+      });
+
+      document.getElementById("qrBaseUrlInput").addEventListener("input", (e) => {
+        state.qrBaseUrl = e.target.value;
+        updateAll();
+      });
+
+      document.getElementById("qrIncludeParams").addEventListener("change", (e) => {
+        state.qrIncludeParams = e.target.checked;
+        updateAll();
+      });
+
+      document.querySelectorAll(".host-preset-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const host = btn.getAttribute("data-host");
+          state.qrBaseUrl = host;
+          document.getElementById("qrBaseUrlInput").value = host;
+          updateAll();
+        });
+      });
+
+      document.getElementById("copyShareUrlBtn").addEventListener("click", () => {
+        const text = getQrPayload();
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast("Link kopiert! / 已复制链接"));
+            return;
+          }
+        } catch (err) {}
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("Link kopiert! / 已复制链接");
+      });
+
+      document.getElementById("downloadQrSvgBtn").addEventListener("click", () => {
+        const payload = getQrPayload();
+        const qrObj = buildQrSvg(payload, "#302E2A", "#FFFFFF", 4);
+        triggerDownload(qrObj.svg, "kerzenzeit-qrcode.svg", "image/svg+xml;charset=utf-8");
+      });
+
+      document.getElementById("downloadQrPngBtn").addEventListener("click", () => {
+        const payload = getQrPayload();
+        const qrObj = buildQrSvg(payload, "#302E2A", "#FFFFFF", 4);
+        const canvas = document.createElement("canvas");
+        const W = 640, H = 800;
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext("2d");
+
+        // Warm brand background
+        ctx.fillStyle = "#FAF7F0";
+        ctx.fillRect(0, 0, W, H);
+        ctx.strokeStyle = "#E2D9C8";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(18, 18, W - 36, H - 36);
+
+        // Header text
+        ctx.fillStyle = "#8A795D";
+        ctx.font = "bold 16px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("KERZENZEIT · DEIN KREATIV-GUIDE", W / 2, 72);
+
+        ctx.fillStyle = "#302E2A";
+        ctx.font = "bold 30px Georgia, serif";
+        ctx.fillText(state.designName.trim() || "Meine Designkerze", W / 2, 114);
+
+        // Draw QR box
+        const qrBoxSize = 440;
+        const qrX = (W - qrBoxSize) / 2;
+        const qrY = 148;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(qrX, qrY, qrBoxSize, qrBoxSize);
+        ctx.strokeStyle = "#D8CEBE";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(qrX, qrY, qrBoxSize, qrBoxSize);
+
+        const n = qrObj.matrix.length;
+        const qz = 4;
+        const cell = qrBoxSize / (n + qz * 2);
+        ctx.fillStyle = "#302E2A";
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            if (qrObj.matrix[r][c]) {
+              ctx.fillRect(
+                Math.floor(qrX + (c + qz) * cell),
+                Math.floor(qrY + (r + qz) * cell),
+                Math.ceil(cell),
+                Math.ceil(cell)
+              );
+            }
+          }
+        }
+
+        // Color summary footer
+        ctx.fillStyle = "#426A49";
+        ctx.font = "bold 18px sans-serif";
+        ctx.fillText(`${state.base} · ${state.strand1} · ${state.strand2}`, W / 2, 636);
+
+        ctx.fillStyle = "#756D62";
+        ctx.font = "15px sans-serif";
+        ctx.fillText(`Stil: ${state.style} | Scan für interaktive Vorschau`, W / 2, 668);
+
+        ctx.fillStyle = "#8A795D";
+        ctx.font = "12px monospace";
+        const shortUrl = payload.length > 58 ? payload.slice(0, 55) + "..." : payload;
+        ctx.fillText(shortUrl, W / 2, 715);
+
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "kerzenzeit-qrcode-card.png";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast("Gespeichert: kerzenzeit-qrcode-card.png");
+        }, "image/png");
+      });
+    });
+  </script>
+</body>
+</html>
